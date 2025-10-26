@@ -1,0 +1,43 @@
+.sidebar-container { 
+  width: 350px; 
+  background-color: #2c2c3a;
+  color: white;
+  padding: 20px;
+  box-sizing: border-box; 
+  height: 100%; 
+  overflow-y: auto; 
+}
+
+.tab-container {
+  display: flex;
+  margin-bottom: 20px;
+  background-color: #353a2c;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #aaa;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tab.active {
+  background-color: #5a644c;
+  color: #a7d9b9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.tab:not(.active):hover {
+  background-color: #404636;
+  color: white;
+}
+
+.tab-content {
+  /* 내용물(RouteSearch 등)에 대한 스타일은 여기에 추가 */
+}

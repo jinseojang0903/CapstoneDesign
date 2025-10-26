@@ -1,0 +1,91 @@
+.top-nav-container {
+  background-color: #353a2c;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-links a,
+.user-menu span {
+  cursor: pointer;
+  display: inline-block;
+  padding: 8px 12px; 
+  border-radius: 5px; 
+  font-weight: bold; 
+  color: #ccc; 
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  text-decoration: none; 
+}
+
+.menu-links a {
+  margin: 0 10px; 
+}
+
+.user-menu span {
+  margin-left: 20px;
+}
+
+.menu-links a:hover,
+.user-menu span:hover {
+  transform: scale(1.1);
+  color: white; 
+}
+
+.menu-links a.active {
+  background-color: #5a644c; 
+  color: #a7d9b9; 
+  transform: scale(1.05); 
+  box-shadow: 0 0 8px rgba(167, 217, 185, 0.2); 
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  color: #333;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  z-index: 1001;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-content button {
+  background-color: #353a2c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.modal-content button:hover {
+  background-color: #5a644c;
+}
+
+.app-logo {
+  height:50px; 
+  width: auto; 
+
+  margin-right: 10px; 
+
+  vertical-align: middle;
+}

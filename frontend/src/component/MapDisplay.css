@@ -1,0 +1,12 @@
+.map-display-container {
+  flex: 1; 
+  
+  height: calc(100vh - 65px);
+
+  background-color: #333;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}

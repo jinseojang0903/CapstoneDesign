@@ -1,0 +1,56 @@
+.freezing-index-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #444;
+}
+
+.freezing-index-container h3 {
+  margin: 0 0 10px 0;
+}
+
+.score-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #f39c12 0% 78%,
+    #343a40 78% 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.score {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.total {
+  font-size: 1rem;
+  color: #aaa;
+}
+
+.status-badge {
+  padding: 5px 15px;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+/* 상태별 뱃지 색상 */
+.status-caution {
+  background-color: #f39c12;
+  color: white;
+}
+.status-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+.status-safe {
+  background-color: #2ecc71;
+  color: white;
+}

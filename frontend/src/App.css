@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #1e1e28;  /*전체배경색*/
+}
+
+.main-content{
+  display: flex;
+}

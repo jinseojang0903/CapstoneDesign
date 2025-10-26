@@ -1,0 +1,21 @@
+.zones-container {
+  padding: 10px 20px;
+}
+
+.zones-container h4 {
+  margin-bottom: 15px;
+}
+
+.zone-item {
+  display: flex;
+  justify-content: space-between;
+  background-color: #1e1e28;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.zone-level {
+  font-weight: bold;
+}
