@@ -1,7 +1,6 @@
 /* SettingsPage.css */
 
 .settings-container {
-    /* 모달 크기 및 기본 스타일 */
     width: 400px;
     padding: 30px;
     background-color: var(--bg-secondary); 
@@ -17,7 +16,6 @@
     color: var(--accent-color); 
 }
 
-/* --- 사용자 상태 정보 --- */
 .user-info-status {
     padding: 10px 5px 15px;
     border-bottom: 1px solid var(--border-color);
@@ -114,8 +112,6 @@
     background-color: var(--accent-color);
 }
 
-
-/* --- ⭐️⭐️⭐️ 토글 스위치 스타일 (핵심) ⭐️⭐️⭐️ --- */
 .switch {
   position: relative;
   display: inline-block;
@@ -136,7 +132,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--border-color); /* 비활성화 상태 색상 */
+  background-color: var(--border-color);
   transition: .4s;
 }
 
@@ -152,7 +148,7 @@
 }
 
 input:checked + .slider {
-  background-color: var(--accent-color); /* 활성화 상태 색상 */
+  background-color: var(--accent-color);
 }
 
 input:focus + .slider {

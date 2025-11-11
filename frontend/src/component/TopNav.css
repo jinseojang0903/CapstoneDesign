@@ -59,17 +59,6 @@
   z-index: 1000;
 }
 
-.modal-content {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  padding: 25px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  z-index: 1001;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-
 .modal-content button {
   background-color: var(--header-bg);
   color: var(--text-primary);
