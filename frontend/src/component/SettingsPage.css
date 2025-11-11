@@ -1,0 +1,173 @@
+/* SettingsPage.css */
+
+.settings-container {
+    /* 모달 크기 및 기본 스타일 */
+    width: 400px;
+    padding: 30px;
+    background-color: var(--bg-secondary); 
+    color: var(--text-primary);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    font-family: Arial, sans-serif;
+}
+
+.settings-title {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--accent-color); 
+}
+
+/* --- 사용자 상태 정보 --- */
+.user-info-status {
+    padding: 10px 5px 15px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+.user-info-status p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* --- 섹션 헤딩 --- */
+.settings-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-left: 5px;
+}
+
+/* --- 개별 설정 항목 --- */
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 5px;
+}
+
+.setting-item:hover {
+    background-color: var(--border-color);
+}
+
+.item-label {
+    flex-grow: 1;
+}
+
+.item-control {
+    display: flex;
+    align-items: center;
+}
+
+.link-icon {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.status-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-right: 15px;
+}
+
+/* --- 하단 버튼 (닫기/로그아웃) --- */
+.action-button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px; 
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-button {
+    background-color: var(--danger-color); 
+    color: var(--bg-secondary); 
+}
+
+.logout-button:hover {
+    background-color: var(--danger-color);
+}
+
+.close-button {
+    background-color: var(--accent-color); 
+    color: var(--bg-secondary);
+}
+
+.close-button:hover {
+    background-color: var(--accent-color);
+}
+
+
+/* --- ⭐️⭐️⭐️ 토글 스위치 스타일 (핵심) ⭐️⭐️⭐️ --- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-color); /* 비활성화 상태 색상 */
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--accent-color); /* 활성화 상태 색상 */
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--accent-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+/* Round sliders */
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

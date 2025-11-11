@@ -5,9 +5,35 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-main); 
+  color: var(--text-primary);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+body.dark {
+    --bg-main: #121212;
+    --bg-secondary: #2c2c3a;
+    --bg-input: #1e1e28;
+    --text-primary: #E2E8F0;
+    --text-secondary: #aaa;
+    --header-bg: #353a2c;
+    --accent-color: #a7d9b9;
+    --danger-color: #e74c3c;
+    --border-color: #444;
+}
+
+body.light {
+    --bg-main: #f0f0f0;
+    --bg-secondary: #ffffff;
+    --bg-input: #e8e8e8;
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --header-bg: #cccccc;
+    --accent-color: #0f766e;
+    --danger-color: #e74c3c;
+    --border-color: #bbb;
 }

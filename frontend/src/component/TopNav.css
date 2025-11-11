@@ -1,6 +1,6 @@
 .top-nav-container {
-  background-color: #353a2c;
-  color: white;
+  background-color: var(--header-bg);
+  color: var(--text-primary);
   padding: 15px 30px;
   display: flex;
   justify-content: space-between;
@@ -8,13 +8,14 @@
 }
 
 .menu-links a,
+.user-menu a, 
 .user-menu span {
   cursor: pointer;
   display: inline-block;
   padding: 8px 12px; 
   border-radius: 5px; 
   font-weight: bold; 
-  color: #ccc; 
+  color: var(--text-secondary);
   transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
   text-decoration: none; 
 }
@@ -23,19 +24,22 @@
   margin: 0 10px; 
 }
 
+.user-menu a,
 .user-menu span {
   margin-left: 20px;
 }
 
 .menu-links a:hover,
+.user-menu a:hover, 
 .user-menu span:hover {
   transform: scale(1.1);
-  color: white; 
+  color: var(--text-primary); 
 }
 
-.menu-links a.active {
-  background-color: #5a644c; 
-  color: #a7d9b9; 
+.menu-links a.active,
+.user-menu a.active {
+  background-color: var(--accent-color); 
+  color: var(--bg-secondary); 
   transform: scale(1.05); 
   box-shadow: 0 0 8px rgba(167, 217, 185, 0.2); 
 }
@@ -46,7 +50,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7); 
   
   display: flex;
   justify-content: center;
@@ -56,8 +60,8 @@
 }
 
 .modal-content {
-  background-color: white;
-  color: #333;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   padding: 25px;
   border-radius: 8px;
   width: 90%;
@@ -67,8 +71,8 @@
 }
 
 .modal-content button {
-  background-color: #353a2c;
-  color: white;
+  background-color: var(--header-bg);
+  color: var(--text-primary);
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
@@ -78,14 +82,61 @@
 }
 
 .modal-content button:hover {
-  background-color: #5a644c;
+  background-color: var(--accent-color);
 }
 
 .app-logo {
   height:50px; 
   width: auto; 
-
   margin-right: 10px; 
-
   vertical-align: middle;
+}
+
+.user-menu a[href="/AdminPage"] {
+  color: var(--danger-color); 
+}
+
+.user-menu a[href="/AdminPage"]:hover {
+  color: var(--danger-color); 
+}
+
+.user-menu a[href="/AdminPage"].active {
+  background-color: var(--danger-color);
+  color: var(--bg-main);
+  box-shadow: 0 0 8px rgba(255, 128, 128, 0.2);
+}
+
+.user-menu .user-greeting {
+  display: inline-block;
+  padding: 8px 12px; 
+  border-radius: 5px; 
+  font-weight: bold; 
+  color: var(--accent-color); 
+  margin-left: 20px;
+  cursor: default;
+  transition: color 0.2s ease;
+}
+
+.user-menu .logout-btn {
+  cursor: pointer;
+  display: inline-block;
+  padding: 8px 12px; 
+  border-radius: 5px; 
+  font-weight: bold; 
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  text-decoration: none; 
+  margin-left: 20px;
+  
+  background-color: var(--danger-color);
+  color: var(--bg-secondary); 
+  border: 1px solid var(--text-primary); 
+  
+  transform: none; 
+}
+
+.user-menu .logout-btn:hover {
+  background-color: var(--danger-color); 
+  color: var(--text-primary); 
+  border-color: var(--accent-color); 
+  transform: scale(1.05); 
 }

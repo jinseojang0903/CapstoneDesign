@@ -1,26 +1,31 @@
 import React from 'react';
 import './FreezingIndex.css';
-import { freezingIndexData } from '../data/mockData.js';
 
-function FreezingIndex() {
-  const { score, status } = freezingIndexData;
+function FreezingIndex({ result, isLoading }) {
+  if (isLoading) {
+    return (
+      <div className="freezing-index-container">
+        <div className="loading-spinner"></div>
+        <span>분석 중...</span>
+      </div>
+    );
+  }
 
-  const getStatusClass = (status) => {
-    if (status === 'DANGER') return 'status-danger';
-    if (status === 'CAUTION') return 'status-caution';
-    if (status === 'SAFE') return 'status-safe';
-    return '';
-  };
-
+  if (!result) {
+    return (
+      <div className="freezing-index-container">
+        <span>경로를 검색하세요.</span>
+      </div>
+    );
+  }
   return (
     <div className="freezing-index-container">
-      <h3>결빙지수</h3>
+      <h4>결빙지수</h4>
       <div className="score-circle">
-        <span className="score">{score}</span>
-        <span className="total">/ 100</span>
+        <span className="score-number">{result.score}</span>
       </div>
-      <div className={`status-badge ${getStatusClass(status)}`}>
-        {status}
+      <div className={`status-badge ${result.status.toLowerCase()}`}>
+        {result.status}
       </div>
     </div>
   );

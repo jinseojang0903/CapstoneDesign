@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import './TopNav.css';
 import appLogo from '../assets/logo.png'
+import { useAuth } from '../context/AuthContext';
+import SettingsPage from './SettingsPage';
 
 function TopNav() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth(); 
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -12,6 +15,11 @@ function TopNav() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+  
+  const handleLogout = () => {
+      logout();
+      closeModal();
   };
 
   return (
@@ -49,18 +57,40 @@ function TopNav() {
         </div>
         
         <div className="user-menu">
-          <NavLink to="/admin">Admin</NavLink>
-          
-          <span onClick={openModal}>Settings</span>
+          {isAuthenticated ? (
+            <>
+              <span className="user-greeting">
+                {user?.username} 님
+              </span>
+              <span onClick={handleLogout} className="logout-btn">
+                로그아웃
+              </span>
+              
+              <NavLink to="/AdminPage">Admin</NavLink>
+              
+              <span onClick={openModal}>Settings</span>
+            </>
+          ) : (
+            <>
+              <NavLink to="/login">로그인</NavLink>
+              <NavLink to="/register">회원가입</NavLink>
+              <NavLink to="/AdminPage">Admin</NavLink>
+              
+              <span onClick={openModal}>Settings</span>
+            </>
+          )}
         </div>
       </nav>
 
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}> 
           <div className="modal-content" onClick={(e) => e.stopPropagation()}> 
-            <h2>Settings</h2>
-            <p>여기에 비밀번호 변경, 로그아웃 등의 내용이 들어갑니다.</p>
-            <button onClick={closeModal}>닫기</button>
+            <SettingsPage
+              onClose={closeModal}
+              onLogout={handleLogout}
+              isAuthenticated={isAuthenticated}
+              user={user}
+            />
           </div>
         </div>
       )}

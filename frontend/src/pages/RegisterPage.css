@@ -1,0 +1,68 @@
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    background-color: #1E293B;
+    color: #E2E8F0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    width: 350px;
+    margin: 50px auto;
+}
+
+.register-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.register-input,
+.register-select {
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    background-color: #334155;
+    color: #E2E8F0;
+    box-sizing: border-box;
+}
+
+.register-button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    width: 100%;
+    border-radius: 6px;
+    border: none;
+    background-color: #0F766E;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.register-button:hover {
+    background-color: #0d635c;
+}
+
+.register-button:disabled {
+    background-color: #475569;
+    cursor: not-allowed;
+}
+
+.register-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    width: 100%;
+    text-align: center;
+}
+
+.message-error {
+    background-color: #EF4444;
+}
+
+.message-success {
+    background-color: #10B981;
+}
