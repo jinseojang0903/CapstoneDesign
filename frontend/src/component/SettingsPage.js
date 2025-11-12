@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './SettingsPage.css'; 
 import { useAuth } from '../context/AuthContext';
+import { useMapTheme } from '../context/MapThemeContext'; 
+import MapThemeList from './MapThemeList';
+
 const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => { 
     
     const { theme, toggleTheme } = useAuth();
+    const { currentTheme } = useMapTheme();
     const isDarkMode = theme === 'dark'; 
+    const [showMapThemes, setShowMapThemes] = useState(false); 
+
+    if (showMapThemes) {
+        return <MapThemeList onBack={() => setShowMapThemes(false)} />;
+    }
 
     return (
         <div className="settings-container">
@@ -35,7 +44,12 @@ const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => {
                     statusText={isDarkMode ? '다크 모드' : '라이트 모드'}
                 />
                 
-                <SettingItem label="지도 테마 설정" type="link" />
+                <SettingItem 
+                    label="지도 테마 설정" 
+                    type="link" 
+                    statusText={currentTheme.name} 
+                    onClick={() => setShowMapThemes(true)} 
+                />
                 <SettingItem label="알림 설정" type="link" />
             </div>
 
@@ -60,11 +74,11 @@ const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => {
     );
 };
 
-const SettingItem = ({ label, type, statusText, isChecked, onToggle }) => {
+const SettingItem = ({ label, type, statusText, isChecked, onToggle, onClick }) => { 
     return (
         <div 
             className="setting-item" 
-            onClick={type === 'link' ? () => console.log(`${label} 클릭됨`) : null}
+            onClick={onClick || (type === 'link' ? () => console.log(`${label} 클릭됨`) : null)}
         >
             <span className="item-label">{label}</span>
             <div className="item-control">
