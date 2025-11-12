@@ -28,7 +28,7 @@ const MapThemeList = ({ onBack }) => {
                     >
                         <span className="item-label">{theme.name}</span>
                         <div className="item-control">
-                            {key === currentThemeKey && <span className="status-text">✓ 적용됨</span>}
+                            {key === currentThemeKey && <span className="status-text">적용됨</span>}
                         </div>
                     </div>
                 ))}
