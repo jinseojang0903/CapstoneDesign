@@ -1,0 +1,91 @@
+/* component/ThresholdSettingsPage.css */
+
+.slider-group .slider {
+    position: relative; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;         
+    width: 100%;             
+    height: 10px;
+    border-radius: 5px;   
+    background: #666; 
+    
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    z-index: 1; 
+    border: none;
+}
+
+.slider-group .slider:hover {
+    opacity: 1;
+}
+
+/* 흰색 박스 삭제 */
+.slider-group .slider::before {
+    display: none !important;
+    content: 'none' !important;
+}
+
+.slider-group .slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    background: transparent;
+    border-radius: 5px;
+    border: none;
+}
+
+.slider-group .slider::-moz-range-track {
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+    background: transparent;
+    border-radius: 5px;
+    border: none;
+}
+
+.slider-group .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; 
+    background: #61dafb;
+    cursor: pointer;
+    z-index: 2; 
+    position: relative; 
+    margin-top: -5px; 
+}
+
+.slider-group .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #61dafb;
+    cursor: pointer;
+    border: none;
+    z-index: 2;
+    position: relative;
+}
+
+.slider-group .danger-slider::-webkit-slider-thumb  { background: #d9534f; }
+.slider-group .danger-slider::-moz-range-thumb  { background: #d9534f; }
+
+.save-button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px; 
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    background-color: #61dafb;
+    color: #2e3137;
+}
+
+.save-button:hover {
+    opacity: 0.9;
+}

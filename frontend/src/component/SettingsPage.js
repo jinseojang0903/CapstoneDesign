@@ -1,3 +1,5 @@
+// SettingsPage.js
+
 import React, { useState } from 'react';
 import './SettingsPage.css'; 
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +9,7 @@ import MapThemeList from './MapThemeList';
 import EditProfilePage from './EditProfilePage';
 import ChangePasswordPage from './ChangePasswordPage';
 import DeactivateAccountPage from './DeactivateAccountPage';
+import ThresholdSettingsPage from './ThresholdSettingsPage'; 
 
 const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => { 
     
@@ -25,6 +28,9 @@ const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => {
         return <ChangePasswordPage onBack={handleBack} userId={user?.id} />;
     } else if (currentView === 'deactivateAccount') {
         return <DeactivateAccountPage onBack={handleBack} userId={user?.id} onLogout={onLogout} />;
+    } 
+    else if (currentView === 'thresholdSettings') {
+        return <ThresholdSettingsPage onBack={handleBack} user={user} />;
     }
     
     return (
@@ -40,7 +46,6 @@ const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => {
             <div className="settings-section">
                 <h3 className="section-title">계정 및 보안</h3>
                 
-                {/* 4. 클릭 이벤트 연결 */}
                 <SettingItem 
                     label="프로필 정보 수정" 
                     type="link" 
@@ -75,12 +80,15 @@ const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => {
                     statusText={currentTheme.name} 
                     onClick={() => setCurrentView('mapThemes')} 
                 />
-                <SettingItem label="알림 설정" type="link" />
+                <SettingItem 
+                    label="결빙 지수 기준 설정" 
+                    type="link" 
+                    onClick={() => setCurrentView('thresholdSettings')}
+                />
             </div>
 
             <div className="settings-section">
                 <h3 className="section-title">정보 및 지원</h3>
-
                 <SettingItem label="도움말 / FAQ" type="link" />
                 <SettingItem label="서비스 이용 약관" type="link" />
                 <SettingItem label="버전 정보" type="text" statusText="v1.0.2" />
@@ -123,5 +131,6 @@ const SettingItem = ({ label, type, statusText, isChecked, onToggle, onClick }) 
         </div>
     );
 };
+
 
 export default SettingsPage;
