@@ -4,17 +4,29 @@ import { useAuth } from '../context/AuthContext';
 import { useMapTheme } from '../context/MapThemeContext'; 
 import MapThemeList from './MapThemeList';
 
+import EditProfilePage from './EditProfilePage';
+import ChangePasswordPage from './ChangePasswordPage';
+import DeactivateAccountPage from './DeactivateAccountPage';
+
 const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => { 
     
     const { theme, toggleTheme } = useAuth();
     const { currentTheme } = useMapTheme();
     const isDarkMode = theme === 'dark'; 
-    const [showMapThemes, setShowMapThemes] = useState(false); 
+    const [currentView, setCurrentView] = useState('main'); 
+    
+    const handleBack = () => setCurrentView('main');
 
-    if (showMapThemes) {
-        return <MapThemeList onBack={() => setShowMapThemes(false)} />;
+    if (currentView === 'mapThemes') {
+        return <MapThemeList onBack={handleBack} />;
+    } else if (currentView === 'editProfile') {
+        return <EditProfilePage onBack={handleBack} user={user} />;
+    } else if (currentView === 'changePassword') {
+        return <ChangePasswordPage onBack={handleBack} userId={user?.id} />;
+    } else if (currentView === 'deactivateAccount') {
+        return <DeactivateAccountPage onBack={handleBack} userId={user?.id} onLogout={onLogout} />;
     }
-
+    
     return (
         <div className="settings-container">
             <h2 className="settings-title">⚙️ 설정</h2>
@@ -28,9 +40,22 @@ const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => {
             <div className="settings-section">
                 <h3 className="section-title">계정 및 보안</h3>
                 
-                <SettingItem label="프로필 정보 수정" type="link" />
-                <SettingItem label="비밀번호 변경" type="link" />
-                <SettingItem label="계정 비활성화/탈퇴" type="link" />
+                {/* 4. 클릭 이벤트 연결 */}
+                <SettingItem 
+                    label="프로필 정보 수정" 
+                    type="link" 
+                    onClick={() => setCurrentView('editProfile')} 
+                />
+                <SettingItem 
+                    label="비밀번호 변경" 
+                    type="link" 
+                    onClick={() => setCurrentView('changePassword')} 
+                />
+                <SettingItem 
+                    label="계정 비활성화/탈퇴" 
+                    type="link" 
+                    onClick={() => setCurrentView('deactivateAccount')} 
+                />
             </div>
 
             <div className="settings-section">
@@ -48,7 +73,7 @@ const SettingsPage = ({ onClose, onLogout, isAuthenticated, user }) => {
                     label="지도 테마 설정" 
                     type="link" 
                     statusText={currentTheme.name} 
-                    onClick={() => setShowMapThemes(true)} 
+                    onClick={() => setCurrentView('mapThemes')} 
                 />
                 <SettingItem label="알림 설정" type="link" />
             </div>
