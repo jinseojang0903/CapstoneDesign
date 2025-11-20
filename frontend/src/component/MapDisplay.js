@@ -7,7 +7,6 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-// --- 아이콘 설정 (기존 코드 유지) ---
 let DefaultIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
@@ -16,7 +15,6 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// --- 선택된 마커 표시 컴포넌트 (기존 코드 유지) ---
 function SelectedLocationMarkers({ startPoint, endPoint }) {
   const map = useMap(); 
   useEffect(() => {
