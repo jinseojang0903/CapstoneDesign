@@ -6,11 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from urllib.parse import quote_plus
-
-# [중요] 분리한 서비스 로직 임포트
 from services.route_algo import RouteFinder
 
-# 환경 변수 로드
 load_dotenv()
 
 DB_USER = os.getenv("DB_USER", "postgres") 
@@ -18,13 +15,11 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "postgres")
-JWT_KEY = os.getenv("JWT_SECRET_KEY", "secret-key") # 기본값 설정
+JWT_KEY = os.getenv("JWT_SECRET_KEY", "secret-key")
 
-# Flask 앱 초기화
 app = Flask(__name__)
 CORS(app)
 
-# DB 설정 (특수문자 비밀번호 처리)
 SAFE_DB_PASSWORD = quote_plus(DB_PASSWORD) if DB_PASSWORD else "" 
 DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{SAFE_DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
@@ -32,17 +27,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = JWT_KEY
 
-# 전역 객체 초기화
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
-# ===============================================
-# [전역] RouteFinder 초기화 (서버 시작 시 1회 로딩)
-# ===============================================
 route_finder = None 
 
-# --- 모델 정의 (User) ---
 class User(db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.BigInteger, primary_key=True) 
@@ -57,7 +47,6 @@ class User(db.Model):
         self.email = email
         self.role = role
 
-# --- 모델 정의 (SnowBase - 제설 전진기지) ---
 class SnowBase(db.Model):
     __tablename__ = 'snow_bases'
 
@@ -235,8 +224,6 @@ def delete_account():
         db.session.rollback()
         return jsonify({"error": "계정 삭제 중 오류가 발생했습니다."}), 500
 
-# --- SnowBase (지도 마커) API ---
-
 @app.route("/api/bases", methods=['GET'])
 def get_all_bases():
     try:
@@ -261,32 +248,26 @@ def search_bases():
     except Exception as e:
         return jsonify({"error": f"검색 중 오류 발생: {str(e)}"}), 500
 
-
-# ===============================================
-# [핵심] 안전 경로 분석 API (Route Search)
-# ===============================================
 @app.route("/api/find_safe_route", methods=['POST'])
 def find_safe_route():
     global route_finder
     
-    # 초기화 실패 시 예외 처리
     if route_finder is None:
         return jsonify({'success': False, 'error': '지도 데이터가 로딩되지 않았습니다.'}), 503
 
     data = request.get_json()
     try:
-        # 프론트엔드에서 받은 데이터: { start: {lat, lng}, end: {lat, lng} }
         start = data.get('start')
         end = data.get('end')
+        mode = data.get('mode', 'fast') 
 
         if not start or not end:
             return jsonify({'success': False, 'error': '출발지와 도착지 좌표가 필요합니다.'}), 400
 
-        # 알고리즘 수행 (route_algo.py의 find_path 호출)
-        # 여기서 반환되는 result에는 'path', 'stats', 'danger_segments'가 모두 포함됨
         result = route_finder.find_path(
             float(start['lat']), float(start['lng']),
-            float(end['lat']), float(end['lng'])
+            float(end['lat']), float(end['lng']),
+            mode=mode
         )
 
         if result:
@@ -298,7 +279,6 @@ def find_safe_route():
         print(f"경로 분석 에러: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# --- 기타 기능 ---
 @app.route("/api/protected", methods=['GET'])
 @jwt_required()
 def protected():
@@ -309,7 +289,6 @@ def protected():
     else:
          return jsonify({"error": "사용자를 찾을 수 없습니다."}), 404
 
-# --- 서버 실행 ---
 if __name__ == '__main__':
     if not DB_PASSWORD:
         print(" FATAL ERROR: DB_PASSWORD 환경 변수가 로드되지 않았습니다.")
@@ -317,9 +296,6 @@ if __name__ == '__main__':
         
     with app.app_context():
         db.create_all()
-    
-    # RouteFinder 초기화 (csv_path 명시)
-    # 개발 모드에서 reloader로 인해 2번 로딩되는 것 방지 로직 포함
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
          route_finder = RouteFinder(csv_path='final_freezing_score.csv')
     else:

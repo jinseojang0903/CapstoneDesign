@@ -3,9 +3,8 @@ import { MapContainer, TileLayer, Polyline, Marker, Popup, useMap, CircleMarker 
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './MainMap.css';
-import { useMapTheme } from '../context/MapThemeContext'; // 테마 Context
+import { useMapTheme } from '../context/MapThemeContext';
 
-// 마커 아이콘 설정
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
@@ -17,7 +16,6 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// 지도 이동 헬퍼 컴포넌트
 function MapUpdater({ bounds }) {
   const map = useMap();
   useEffect(() => {
@@ -29,7 +27,6 @@ function MapUpdater({ bounds }) {
 }
 
 function MainMap() {
-  // 현재 선택된 테마 정보 가져오기
   const { currentTheme } = useMapTheme();
 
   const [startPlace, setStartPlace] = useState(null);
@@ -38,13 +35,17 @@ function MainMap() {
   const [routeStats, setRouteStats] = useState(null);
   const [lastMilePath, setLastMilePath] = useState([]); 
   const [dangerSegments, setDangerSegments] = useState([]);
+  
+  const [currentMode, setCurrentMode] = useState('fast');
 
   useEffect(() => {
     const handleAnalyzeRequest = async (e) => {
-      const { start, end } = e.detail;
+      const { start, end, mode = 'fast' } = e.detail;
       
       setStartPlace(start);
       setEndPlace(end);
+      setCurrentMode(mode);
+      
       setRouteStats(null);
       setRoutePath([]); 
       setLastMilePath([]); 
@@ -56,7 +57,8 @@ function MainMap() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             start: { lat: start.lat, lng: start.lng },
-            end: { lat: end.lat, lng: end.lng }
+            end: { lat: end.lat, lng: end.lng },
+            mode: mode
           })
         });
         
@@ -74,6 +76,30 @@ function MainMap() {
             const lastRoadPoint = data.path[data.path.length - 1]; 
             setLastMilePath([lastRoadPoint, [end.lat, end.lng]]);
           }
+
+          const analysisEvent = new CustomEvent('analysisSuccess', {
+            detail: {
+              score: data.stats.average,
+              status: data.stats.risk_level,
+              
+              sections: data.danger_segments.map((seg, idx) => ({
+                id: idx,
+                name: seg.road_name || '도로명 정보 없음',
+                score: seg.score,
+                type: seg.score >= 80 ? 'Danger' : 'Caution'
+              })),
+
+              details: {
+                maxSlope: data.stats.env_details?.max_slope || 0,
+                avgSlope: data.stats.env_details?.avg_slope || 0,
+                avgFreeze: data.stats.env_details?.avg_freeze || 0,
+                avgAccident: data.stats.env_details?.avg_accident || 0,
+                avgPopulation: data.stats.env_details?.avg_population || 0,
+                avgRaw: data.stats.env_details?.avg_raw || 0
+              }
+            }
+          });
+          window.dispatchEvent(analysisEvent);
 
         } else {
           alert("경로를 찾을 수 없습니다: " + (data.message || data.error));
@@ -93,6 +119,11 @@ function MainMap() {
     ? L.latLngBounds([startPlace.lat, startPlace.lng], [endPlace.lat, endPlace.lng])
     : null;
 
+  const getPathColor = () => {
+    if (currentMode === 'safe') return '#2ecc71';
+    return '#3498db';
+  };
+
   return (
     <div className="main-dashboard-wrapper">
       <MapContainer 
@@ -100,7 +131,6 @@ function MainMap() {
         zoom={11} 
         style={{ height: '100%', width: '100%', zIndex: 0 }} 
       >
-        {/* TileLayer를 동적으로 변경 */}
         <TileLayer 
             url={currentTheme.url} 
             attribution={currentTheme.attribution}
@@ -114,8 +144,8 @@ function MainMap() {
         {routePath.length > 0 && (
           <Polyline 
             positions={routePath} 
-            color={routeStats?.risk_level === 'Danger' ? '#ff4444' : '#3498db'} 
-            weight={6} 
+            color={getPathColor()} 
+            weight={7} 
             opacity={0.8} 
           />
         )}
@@ -134,17 +164,16 @@ function MainMap() {
           <CircleMarker
             key={index}
             center={[segment.lat, segment.lng]}
-            radius={6}
+            radius={8}
             pathOptions={{
-              color: 'red',      
-              fillColor: '#f00', 
-              fillOpacity: 0.8,
-              weight: 1
+              color: '#fff',      
+              weight: 2,
+              fillColor: '#ff0000',
+              fillOpacity: 1.0,
             }}
           >
             <Popup>
               <div style={{ textAlign: 'center', minWidth: '120px' }}>
-                {/* [수정] 도로명 주소 표시 */}
                 <div style={{ 
                   fontSize: '1.1em', 
                   fontWeight: 'bold', 
@@ -169,6 +198,12 @@ function MainMap() {
       {routeStats && (
         <div className="analysis-panel">
           <h3>📊 경로 분석 결과</h3>
+          <div className="stat-item">
+            <span>경로 모드:</span>
+            <strong style={{ color: currentMode === 'safe' ? '#2ecc71' : '#333' }}>
+              {currentMode === 'safe' ? '🛡️ 안전 우회' : '🚀 최단 거리'}
+            </strong>
+          </div>
           <div className="stat-item">
             <span>평균 위험도:</span>
             <strong>{routeStats.average} / 100</strong>
