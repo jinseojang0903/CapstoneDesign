@@ -1,4 +1,3 @@
-/* --- 기본 컨테이너 --- */
 .my-routes-container {
   padding: 40px;
   color: #fff;
@@ -9,12 +8,10 @@
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-/* --- 헤더 영역 --- */
 .header-section { margin-bottom: 30px; }
 .header-section h2 { font-size: 1.8rem; margin-bottom: 10px; }
 .header-section p { color: #aaa; }
 
-/* --- 빠른 실행 버튼 --- */
 .quick-actions { display: flex; gap: 15px; margin-bottom: 30px; }
 
 .action-card {
@@ -32,7 +29,6 @@
 
 .divider { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 30px 0; }
 
-/* --- 리스트 공통 --- */
 .route-section { margin-bottom: 40px; }
 .route-section h3 {
   margin-bottom: 15px; color: #eee; font-size: 1.2rem;
@@ -41,7 +37,6 @@
 .route-list { display: grid; gap: 15px; }
 .history-list { display: flex; flex-direction: column; gap: 0; }
 
-/* --- 즐겨찾기 카드 --- */
 .route-card {
   background: #2c2c35; padding: 20px; border-radius: 10px;
   display: flex; justify-content: space-between; align-items: center;
@@ -53,7 +48,6 @@
 .delete-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; opacity: 0.7; transition: 0.2s; }
 .delete-btn:hover { opacity: 1; transform: scale(1.1); }
 
-/* --- 히스토리 아이템 --- */
 .history-item {
   display: flex; justify-content: space-between; align-items: center;
   padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #ccc;
@@ -64,9 +58,6 @@
 .history-item .score { font-weight: bold; min-width: 50px; text-align: right; }
 .empty { color: #666; text-align: center; padding: 30px; background: rgba(0,0,0,0.2); border-radius: 8px; }
 
-/* =========================================
-   [모달 스타일] - 전체 디자인
-   ========================================= */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -75,19 +66,18 @@
   z-index: 9999;
 }
 
-.modal-content {
+.route-modal-content {
   background: #222; width: 90%; max-width: 480px; max-height: 85vh;
   display: flex; flex-direction: column;
   border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   border: 1px solid #444; color: white; overflow: hidden;
 }
 
-.modal-content h3 {
+.route-modal-content h3 {
   margin: 0; padding: 20px; background: #2a2a2a;
   text-align: center; font-size: 1.2rem; border-bottom: 1px solid #444;
 }
 
-/* 탭 버튼 */
 .modal-tabs { display: flex; background: #1e1e1e; border-bottom: 1px solid #444; }
 .modal-tabs button {
   flex: 1; padding: 15px; background: transparent; border: none;
@@ -98,12 +88,10 @@
   color: #4dabf7; font-weight: bold; border-bottom: 3px solid #4dabf7; background: #252525;
 }
 
-/* 모달 내용 */
 .modal-body {
   flex: 1; overflow-y: auto; padding: 20px; min-height: 200px;
 }
 
-/* 리스트 공통 */
 .modal-history-list, .search-results { list-style: none; padding: 0; margin: 0; }
 
 .history-select-item {
@@ -118,14 +106,10 @@
 }
 .history-actions button:hover { background: #4dabf7; }
 
-/* ---------------------------------------------
-   [NEW] 검색창 디자인 강화 (여기가 핵심입니다)
-   --------------------------------------------- */
 .modal-search-box {
-  position: relative; /* 아이콘을 안에 가두기 위해 필수 */
+  position: relative; 
 }
 
-/* 돋보기 아이콘 (가상 요소) */
 .modal-search-box::before {
   content: '🔍';
   position: absolute;
@@ -135,7 +119,7 @@
 
 .modal-search-box input {
   width: 100%;
-  padding: 14px 15px 14px 45px; /* 왼쪽 여백(45px)을 줘서 아이콘 공간 확보 */
+  padding: 14px 15px 14px 45px;
   background: #2a2a2a;
   border: 2px solid #333;
   border-radius: 10px;
@@ -149,7 +133,6 @@
   box-shadow: 0 0 0 4px rgba(77, 171, 247, 0.15);
 }
 
-/* 검색 결과 리스트 */
 .search-results { display: flex; flex-direction: column; gap: 8px; }
 
 .search-results li {
@@ -159,7 +142,6 @@
   color: #ddd; font-size: 0.95rem;
 }
 
-/* 핀 아이콘 추가 */
 .search-results li::before {
   content: '📍'; margin-right: 12px; font-size: 1.2rem;
   filter: grayscale(1) opacity(0.7); transition: all 0.2s;
@@ -171,7 +153,6 @@
 }
 .search-results li:hover::before { filter: grayscale(0) opacity(1); transform: scale(1.1); }
 
-/* 모달 하단 */
 .modal-footer { padding: 15px; border-top: 1px solid #444; background: #2a2a2a; }
 .close-modal-btn {
   width: 100%; padding: 12px; background: #444; border: none;

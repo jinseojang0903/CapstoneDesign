@@ -48,19 +48,21 @@ function TopNav() {
           >
             My Routes
           </NavLink>
-          <NavLink 
-            to="/professional" 
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            Professional
-          </NavLink>
+          {isAuthenticated && user?.role === 'expert' && (
+            <NavLink 
+              to="/professional" 
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              Professional
+            </NavLink>
+          )}
         </div>
         
         <div className="user-menu">
           {isAuthenticated ? (
             <>
               <span className="user-greeting">
-                {user?.username} 님
+                {user?.username} 님 
               </span>
               <span onClick={handleLogout} className="logout-btn">
                 로그아웃
