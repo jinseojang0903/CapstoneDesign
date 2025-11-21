@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Backend cache
+backend/cache/
+
+# Backend models
+backend/models/
+backend/.env/
+backend/.env
+# Node modules
+frontend/node_modules/
+
+# React build
+frontend/build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
