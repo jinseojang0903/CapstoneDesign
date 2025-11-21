@@ -6,8 +6,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from urllib.parse import quote_plus
+from datetime import datetime
+
+# [중요] 분리한 서비스 로직 임포트
 from services.route_algo import RouteFinder
 
+# 환경 변수 로드
 load_dotenv()
 
 DB_USER = os.getenv("DB_USER", "postgres") 
@@ -15,11 +19,13 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "postgres")
-JWT_KEY = os.getenv("JWT_SECRET_KEY", "secret-key")
+JWT_KEY = os.getenv("JWT_SECRET_KEY", "secret-key") # 기본값 설정
 
+# Flask 앱 초기화
 app = Flask(__name__)
 CORS(app)
 
+# DB 설정 (특수문자 비밀번호 처리)
 SAFE_DB_PASSWORD = quote_plus(DB_PASSWORD) if DB_PASSWORD else "" 
 DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{SAFE_DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
@@ -27,12 +33,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = JWT_KEY
 
+# 전역 객체 초기화
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
+# ===============================================
+# [전역] RouteFinder 초기화 (서버 시작 시 1회 로딩)
+# ===============================================
 route_finder = None 
 
+# --- 모델 정의 (User) ---
 class User(db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.BigInteger, primary_key=True) 
@@ -47,9 +58,59 @@ class User(db.Model):
         self.email = email
         self.role = role
 
+# --- 모델 정의 (UserRoute - 사용자 즐겨찾기 경로) ---
+class UserRoute(db.Model):
+    __tablename__ = 'user_routes'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.user_id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)  # 예: "집", "회사"
+    start_name = db.Column(db.String(100), nullable=False)
+    start_lat = db.Column(db.Float, nullable=False)
+    start_lng = db.Column(db.Float, nullable=False)
+    end_name = db.Column(db.String(100), nullable=False)
+    end_lat = db.Column(db.Float, nullable=False)
+    end_lng = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'start': self.start_name,
+            'end': self.end_name,
+            'start_coords': {'lat': self.start_lat, 'lng': self.start_lng},
+            'end_coords': {'lat': self.end_lat, 'lng': self.end_lng},
+            'created_at': self.created_at.strftime('%Y-%m-%d')
+        }
+
+# --- [신규] 모델 정의 (SearchHistory - 검색 기록) ---
+class SearchHistory(db.Model):
+    __tablename__ = 'search_history'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.user_id'), nullable=False)
+    start_name = db.Column(db.String(100), nullable=False)
+    end_name = db.Column(db.String(100), nullable=False)
+    start_lat = db.Column(db.Float, nullable=True)
+    start_lng = db.Column(db.Float, nullable=True)
+    end_lat = db.Column(db.Float, nullable=True)
+    end_lng = db.Column(db.Float, nullable=True)
+    score = db.Column(db.Integer, nullable=True, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.created_at.strftime('%Y.%m.%d'),
+            'start': self.start_name,
+            'end': self.end_name,
+            'start_coords': {'lat': self.start_lat, 'lng': self.start_lng},
+            'end_coords': {'lat': self.end_lat, 'lng': self.end_lng},
+            'score': self.score
+        }
+
+# --- 모델 정의 (SnowBase - 제설 전진기지) ---
 class SnowBase(db.Model):
     __tablename__ = 'snow_bases'
-
     id = db.Column(db.Integer, primary_key=True)
     base_id = db.Column(db.String(50), nullable=True)
     agency = db.Column(db.String(50))
@@ -108,8 +169,6 @@ def login():
     user = User.query.filter_by(username=username).first()
 
     if user and bcrypt.check_password_hash(user.password, password):
-        # 토큰 생성
-        token_identity = str(user.username) 
         access_token = create_access_token(
             identity=user.username,
             additional_claims={
@@ -137,6 +196,7 @@ def get_profile():
     else:
         return jsonify({"error": "사용자를 찾을 수 없습니다."}), 404
 
+# [복구된 기능] 프로필 수정
 @app.route("/api/profile", methods=['PATCH'])
 @jwt_required()
 def update_profile():
@@ -171,6 +231,7 @@ def update_profile():
         db.session.rollback()
         return jsonify({"error": "프로필 정보 업데이트 중 오류가 발생했습니다."}), 500
 
+# [복구된 기능] 비밀번호 변경
 @app.route("/api/password/change", methods=['PATCH'])
 @jwt_required()
 def change_password():
@@ -224,6 +285,103 @@ def delete_account():
         db.session.rollback()
         return jsonify({"error": "계정 삭제 중 오류가 발생했습니다."}), 500
 
+# --- [신규] 즐겨찾기 경로 API ---
+
+@app.route("/api/routes", methods=['GET'])
+@jwt_required()
+def get_my_routes():
+    current_username = get_jwt_identity()
+    user = User.query.filter_by(username=current_username).first()
+    
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    routes = UserRoute.query.filter_by(user_id=user.user_id).order_by(UserRoute.created_at.desc()).all()
+    return jsonify([r.serialize() for r in routes]), 200
+
+@app.route("/api/routes", methods=['POST'])
+@jwt_required()
+def add_my_route():
+    current_username = get_jwt_identity()
+    user = User.query.filter_by(username=current_username).first()
+    
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json()
+    new_route = UserRoute(
+        user_id=user.user_id,
+        name=data.get('name', '새로운 경로'),
+        start_name=data['start_name'],
+        start_lat=data['start_lat'],
+        start_lng=data['start_lng'],
+        end_name=data['end_name'],
+        end_lat=data['end_lat'],
+        end_lng=data['end_lng']
+    )
+    
+    db.session.add(new_route)
+    db.session.commit()
+    
+    return jsonify({"message": "경로가 저장되었습니다.", "route": new_route.serialize()}), 201
+
+@app.route("/api/routes/<int:route_id>", methods=['DELETE'])
+@jwt_required()
+def delete_my_route(route_id):
+    current_username = get_jwt_identity()
+    user = User.query.filter_by(username=current_username).first()
+    
+    route = UserRoute.query.filter_by(id=route_id, user_id=user.user_id).first()
+    if not route:
+        return jsonify({"error": "Route not found"}), 404
+        
+    db.session.delete(route)
+    db.session.commit()
+    return jsonify({"message": "경로가 삭제되었습니다."}), 200
+
+# --- [신규] 검색 기록 API ---
+
+@app.route("/api/history", methods=['GET'])
+@jwt_required()
+def get_history():
+    current_username = get_jwt_identity()
+    user = User.query.filter_by(username=current_username).first()
+    
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # 최신순으로 10개만 가져오기
+    history = SearchHistory.query.filter_by(user_id=user.user_id)\
+        .order_by(SearchHistory.created_at.desc()).limit(10).all()
+    
+    return jsonify([h.serialize() for h in history]), 200
+
+@app.route("/api/history", methods=['POST'])
+@jwt_required()
+def add_history():
+    current_username = get_jwt_identity()
+    user = User.query.filter_by(username=current_username).first()
+    
+    data = request.get_json()
+    
+    new_history = SearchHistory(
+        user_id=user.user_id,
+        start_name=data['start_name'],
+        end_name=data['end_name'],
+        start_lat=data.get('start_lat'),
+        start_lng=data.get('start_lng'),
+        end_lat=data.get('end_lat'),
+        end_lng=data.get('end_lng'),
+        score=data.get('score', 0)
+    )
+    
+    db.session.add(new_history)
+    db.session.commit()
+    return jsonify({"message": "History saved"}), 201
+
+# --- SnowBase (지도 마커) API ---
+
+# [복구된 기능] 모든 기지 조회
 @app.route("/api/bases", methods=['GET'])
 def get_all_bases():
     try:
@@ -248,22 +406,32 @@ def search_bases():
     except Exception as e:
         return jsonify({"error": f"검색 중 오류 발생: {str(e)}"}), 500
 
+
+# ===============================================
+# [핵심] 안전 경로 분석 API (Route Search)
+# ===============================================
 @app.route("/api/find_safe_route", methods=['POST'])
 def find_safe_route():
     global route_finder
     
+    # 초기화 실패 시 예외 처리
     if route_finder is None:
         return jsonify({'success': False, 'error': '지도 데이터가 로딩되지 않았습니다.'}), 503
 
     data = request.get_json()
     try:
+        # 프론트엔드에서 받은 데이터: { start: {lat, lng}, end: {lat, lng} }
         start = data.get('start')
         end = data.get('end')
         mode = data.get('mode', 'fast') 
 
+        print(f"🔍 [DEBUG] 요청된 모드: {mode}")
+        print(f"📍 출발: {start}, 도착: {end}")
+
         if not start or not end:
             return jsonify({'success': False, 'error': '출발지와 도착지 좌표가 필요합니다.'}), 400
 
+        # 알고리즘 수행 (route_algo.py의 find_path 호출)
         result = route_finder.find_path(
             float(start['lat']), float(start['lng']),
             float(end['lat']), float(end['lng']),
@@ -279,6 +447,7 @@ def find_safe_route():
         print(f"경로 분석 에러: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# [복구된 기능] 토큰 테스트용
 @app.route("/api/protected", methods=['GET'])
 @jwt_required()
 def protected():
@@ -289,6 +458,7 @@ def protected():
     else:
          return jsonify({"error": "사용자를 찾을 수 없습니다."}), 404
 
+# --- 서버 실행 ---
 if __name__ == '__main__':
     if not DB_PASSWORD:
         print(" FATAL ERROR: DB_PASSWORD 환경 변수가 로드되지 않았습니다.")
@@ -296,6 +466,8 @@ if __name__ == '__main__':
         
     with app.app_context():
         db.create_all()
+    
+    # RouteFinder 초기화 (csv_path 명시)
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
          route_finder = RouteFinder(csv_path='final_freezing_score.csv')
     else:
