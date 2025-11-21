@@ -50,7 +50,6 @@ function MapDisplay() {
       .catch(error => console.error("데이터 로드 실패:", error));
   }, []);
 
-  // [기존] Sidebar -> Map (그리기용)
   useEffect(() => {
     const handlePlaceSelect = (event) => {
       const { type, place } = event.detail;
@@ -61,16 +60,13 @@ function MapDisplay() {
     return () => window.removeEventListener('placeSelected', handlePlaceSelect);
   }, []);
 
-  // [신규] 마커 팝업에서 버튼 클릭 시 호출할 함수
   const handleSetRoutePoint = (type, base) => {
-    // 1. 장소 데이터 포맷팅
     const placeData = {
-      name: base.agency, // "강남구" 등
+      name: base.agency,
       lat: base.lat,
       lng: base.lng
     };
 
-    // 2. "setRoutePoint" 라는 방송 송출 (Sidebar가 들음)
     const event = new CustomEvent('setRoutePoint', {
       detail: { type: type, place: placeData }
     });
@@ -82,7 +78,6 @@ function MapDisplay() {
       <MapContainer center={position} zoom={11} style={{ height: '100%', width: '100%' }}>
         <TileLayer attribution={currentTheme.attribution} url={currentTheme.url} />
 
-        {/* 제설 기지 마커 */}
         {bases.map(base => (
           <CircleMarker
             key={base.id}
@@ -94,7 +89,6 @@ function MapDisplay() {
             }}
             radius={base.type === '발진' ? 10 : 6}
           >
-            {/* [수정] 팝업 내부에 버튼 추가 */}
             <Popup>
               <div style={{ textAlign: 'center' }}>
                 <strong>[{base.type}] {base.agency}</strong><br/>
